@@ -12,13 +12,15 @@ local wibox = require("wibox")
 local watch = require("awful.widget.watch")
 local spawn = require("awful.spawn")
 
-local PATH_TO_ICON = "/usr/share/icons/Arc/status/symbolic/display-brightness-symbolic.svg"
-local GET_BRIGHTNESS_CMD = "light -G"   -- "xbacklight -get"
-local INC_BRIGHTNESS_CMD = "light -A 5" -- "xbacklight -inc 5"
-local DEC_BRIGHTNESS_CMD = "light -U 5" -- "xbacklight -dec 5"
+local HOME = os.getenv("HOME")
+
+local PATH_TO_ICON = HOME .. "/.config/awesome/icons/Arc/status/symbolic/display-brightness-symbolic.svg"
+local GET_BRIGHTNESS_CMD = "xbacklight -get"
+local INC_BRIGHTNESS_CMD = "xbacklight -inc 5"
+local DEC_BRIGHTNESS_CMD = "xbacklight -dec 5"
 
 local brightness_text = wibox.widget.textbox()
-brightness_text:set_font('Play 9')
+brightness_text:set_font('Ubuntu 10')
 
 local brightness_icon = wibox.widget {
     {

@@ -17,31 +17,53 @@ local wibox = require("wibox")
 -- Battery 0: Discharging, 75%, 01:51:38 remaining
 -- Battery 0: Charging, 53%, 00:57:43 until charged
 
-local PATH_TO_ICONS = "/usr/share/icons/Arc/status/symbolic/"
 local HOME = os.getenv("HOME")
+local PATH_TO_ICONS = HOME .. "/.config/awesome/icons/Arc/status/symbolic/"
 
 local battery_widget = wibox.widget {
     {
         id = "icon",
         widget = wibox.widget.imagebox,
-        resize = false
+        resize = false,
+	forced_height = 12,
+	forced_width = 12
     },
-    layout = wibox.container.margin(_, 0, 0, 3)
+    layout = wibox.container.margin(_, 0, 0, 2)
 }
 
 -- Popup with battery info
 -- One way of creating a pop-up notification - naughty.notify
 local notification
+
+local w = wibox {
+    height = 80,
+    width = 200,
+    ontop = true,
+    expand = true,
+    bg = '#1e252c',
+}
+
+w:setup {
+    border_width = 0,
+    id = 'battery_text',
+    align  = 'center',
+    valign = 'center',
+    widget = wibox.widget.textbox
+}
+
+awful.placement.top_right(w, { margins = {top = 25, right = 10}, parent = awful.screen.focused() })
+
 local function show_battery_status()
     awful.spawn.easy_async([[bash -c 'acpi']],
         function(stdout, _, _, _)
-            naughty.destroy(notification)
-            notification = naughty.notify{
-                text =  stdout,
-                title = "Battery status",
-                timeout = 5, hover_timeout = 0.5,
-                width = 200,
-            }
+--            naughty.destroy(notification)
+--            notification = naughty.notify{
+--                text =  stdout,
+--                title = "Battery status",
+--                timeout = 5, hover_timeout = 0.5,
+--                width = 200,
+--            }
+	      w.battery_text.markup = stdout
         end
     )
 end
@@ -55,17 +77,16 @@ end
 -- beautiful.tooltip_bg = beautiful.bg_normal
 
 local function show_battery_warning()
-    naughty.notify{
-        icon = HOME .. "/.config/awesome/nichosi.png",
-        icon_size=100,
-        text = "Huston, we have a problem",
-        title = "Battery is dying",
-        timeout = 5, hover_timeout = 0.5,
-        position = "bottom_right",
-        bg = "#F06060",
-        fg = "#EEE9EF",
-        width = 300,
-    }
+    	naughty.notify{
+		icon = HOME .. "/.config/awesome/nichosi.png",
+		icon_size=100,
+		text = "Huston, we have a problem",
+		title = "Battery is dying",
+		timeout = 5, hover_timeout = 0.5,
+		bg = "#F06060",
+		fg = "#EEE9EF",
+		width = 300,
+	}
 end
 
 local last_battery_check = os.time()
@@ -132,7 +153,18 @@ watch("acpi -i", 10,
     end,
     battery_widget)
 
-battery_widget:connect_signal("mouse::enter", function() show_battery_status() end)
-battery_widget:connect_signal("mouse::leave", function() naughty.destroy(notification) end)
+--battery_widget:connect_signal("mouse::enter", function() show_battery_status() end)
+--battery_widget:connect_signal("mouse::leave", function() w.visible = false end)
+
+battery_widget:buttons(
+    awful.util.table.join(
+        awful.button({}, 1, function()
+            awful.placement.top_right(w, { margins = {top = 25, right = 10}, parent = awful.screen.focused() })
+            show_battery_status()
+	    w.battery_text.display_labels = true
+            w.visible = not w.visible
+        end)
+    )
+)
 
 return battery_widget

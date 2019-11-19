@@ -15,7 +15,7 @@ local spawn = require("awful.spawn")
 
 local secrets = require("awesome-wm-widgets.secrets")
 
-local path_to_icons = "/home/kapo/.config/awesome/icons/Arc/status/symbolic/"
+local path_to_icons = "/home/kapo/.config/awesome/awesome-wm-widgets/mic-widget/"
 
 local device_arg
 if secrets.volume_audio_controller == 'pulse' then
@@ -24,18 +24,20 @@ else
 	device_arg = ''
 end
 
-local GET_VOLUME_CMD = 'amixer ' .. device_arg .. ' sget Master'
-local INC_VOLUME_CMD = 'amixer ' .. device_arg .. ' sset Master 5%+'
-local DEC_VOLUME_CMD = 'amixer ' .. device_arg .. ' sset Master 5%-'
-local TOG_VOLUME_CMD = 'amixer ' .. device_arg .. ' sset Master toggle'
+local GET_VOLUME_CMD = 'amixer ' .. device_arg .. ' sget Capture'
+local INC_VOLUME_CMD = 'amixer ' .. device_arg .. ' sset Capture 5%+'
+local DEC_VOLUME_CMD = 'amixer ' .. device_arg .. ' sset Capture 5%-'
+local TOG_VOLUME_CMD = 'amixer ' .. device_arg .. ' sset Capture toggle'
 
 
 local volume_widget = wibox.widget {
     {
         id = "icon",
-        image = path_to_icons .. "audio-volume-muted-symbolic.svg",
-        resize = false,
+        image = path_to_icons .. "microphone-sensitivity-muted-symbolic_red.png",
+        resize = true,
         widget = wibox.widget.imagebox,
+	forced_height = 14,
+	forced_width = 14
     },
     layout = wibox.container.margin(_, _, _, 3),
     set_image = function(self, path)
@@ -48,13 +50,13 @@ local update_graphic = function(widget, stdout, _, _, _)
     local volume = string.match(stdout, "(%d?%d?%d)%%")
     volume = tonumber(string.format("% 3d", volume))
     local volume_icon_name
-    if mute == "off" then volume_icon_name="audio-volume-muted-symbolic_red"
-    elseif (volume >= 0 and volume < 25) then volume_icon_name="audio-volume-muted-symbolic"
-    elseif (volume < 50) then volume_icon_name="audio-volume-low-symbolic"
-    elseif (volume < 75) then volume_icon_name="audio-volume-medium-symbolic"
-    elseif (volume <= 100) then volume_icon_name="audio-volume-high-symbolic"
+    if mute == "off" then volume_icon_name="microphone-sensitivity-muted-symbolic_red.png"
+    elseif (volume >= 0 and volume < 25) then volume_icon_name="microphone-sensitivity-muted-symbolic.svg"
+    elseif (volume < 50) then volume_icon_name="microphone-sensitivity-low-symbolic.svg"
+    elseif (volume < 75) then volume_icon_name="microphone-sensitivity-medium-symbolic.svg"
+    elseif (volume <= 100) then volume_icon_name="microphone-sensitivity-high-symbolic.svg"
     end
-    widget.image = path_to_icons .. volume_icon_name .. ".svg"
+    widget.image = path_to_icons .. volume_icon_name
 end
 
 --[[ allows control volume level by:

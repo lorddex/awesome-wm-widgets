@@ -6,7 +6,7 @@ local wibox = require("wibox")
 local ramgraph_widget = wibox.widget {
     border_width = 0,
     colors = {
-        '#74aeab', '#26403f'
+        '#9699a2', '#26403f'
     },
     display_labels = false,
     forced_width = 25,
